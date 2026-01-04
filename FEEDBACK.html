@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suggestion Box</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .header .icon {
+      font-size: 60px;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .back-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
+      transform: translateX(-5px);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 12px 30px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .tab-btn:hover, .tab-btn.active {
+      background: rgba(255, 255, 255, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .suggestion-form {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-section {
+      margin-bottom: 25px;
+    }
+
+    .form-section h3 {
+      color: white;
+      margin-bottom: 15px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      font-size: 1.2rem;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      color: white;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 1rem;
+      backdrop-filter: blur(5px);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 150px;
+    }
+
+    .form-group select {
+      cursor: pointer;
+    }
+
+    .form-group select option {
+      background: #764ba2;
+      color: white;
+    }
+
+    .recipient-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .recipient-card {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(5px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 15px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .recipient-card:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .recipient-card.selected {
+      background: rgba(255, 255, 255, 0.4);
+      border-color: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .recipient-card .icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .recipient-card .name {
+      color: white;
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+    }
+
+    .recipient-card .role {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.9rem;
+    }
+
+    .category-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .category-tag {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .category-tag:hover, .category-tag.selected {
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(1.05);
+    }
+
+    .anonymous-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 50px;
+      height: 26px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .toggle-switch.active {
+      background: rgba(16, 185, 129, 0.5);
+    }
+
+    .toggle-slider {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .toggle-switch.active .toggle-slider {
+      transform: translateX(24px);
+    }
+
+    .submit-btn {
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      padding: 14px 30px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .submit-btn:hover {
+      background: rgba(255, 255, 255, 0.5);
+      transform: scale(1.02);
+    }
+
+    .suggestions-list {
+      display: grid;
+      gap: 15px;
+    }
+
+    .suggestion-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .suggestion-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .suggestion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .suggestion-meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .meta-badge {
+      background: rgba(255, 255, 255, 0.3);
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: white;
+    }
+
+    .suggestion-content {
+      color: white;
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .suggestion-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: white;
+    }
+
+    .empty-state .icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .empty-state p {
+      opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+      .recipient-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="C:\Users\GOKULAN\OneDrive\Documents\IDEALAB\SMVECHUBGLASSFINISH.html" class="back-btn">← Back to Hub</a>
+
+  <div class="header">
+    <div class="icon">📮</div>
+    <h1>Suggestion Box</h1>
+    <p>Share your ideas and feedback to improve our campus</p>
+  </div>
+
+  <div class="container">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('submit')">📝 Submit Suggestion</button>
+      <button class="tab-btn" onclick="switchTab('view')">👀 View Suggestions</button>
+    </div>
+
+    <!-- Submit Tab -->
+    <div id="submitTab" class="tab-content active">
+      <div class="suggestion-form">
+        <form id="suggestionForm">
+          <div class="form-section">
+            <h3>📧 Select Recipient</h3>
+            <div class="recipient-grid">
+              <div class="recipient-card" onclick="selectRecipient('principal', this)">
+                <div class="icon">👨‍💼</div>
+                <div class="name">Principal</div>
+                <div class="role">principal@gokulan.edu</div>
+              </div>
+              <div class="recipient-card" onclick="selectRecipient('hod-csbs', this)">
+                <div class="icon">👩‍🏫</div>
+                <div class="name">HOD - CSBS</div>
+                <div class="role">hod.csbs@gokulan.edu</div>
+              </div>
+              <div class="recipient-card" onclick="selectRecipient('hod-cse', this)">
+                <div class="icon">👨‍🏫</div>
+                <div class="name">HOD - CSE</div>
+                <div class="role">hod.cse@gokulan.edu</div>
+              </div>
+              <div class="recipient-card" onclick="selectRecipient('admin', this)">
+                <div class="icon">🏛️</div>
+                <div class="name">Administration</div>
+                <div class="role">admin@gokulan.edu</div>
+              </div>
+              <div class="recipient-card" onclick="selectRecipient('placement', this)">
+                <div class="icon">💼</div>
+                <div class="name">Placement Cell</div>
+                <div class="role">placement@gokulan.edu</div>
+              </div>
+              <div class="recipient-card" onclick="selectRecipient('library', this)">
+                <div class="icon">📚</div>
+                <div class="name">Library</div>
+                <div class="role">library@gokulan.edu</div>
+              </div>
+            </div>
+            <input type="hidden" id="selectedRecipient" required>
+          </div>
+
+          <div class="form-section">
+            <h3>📋 Category</h3>
+            <div class="category-tags">
+              <div class="category-tag" onclick="selectCategory('Academic', this)">Academic</div>
+              <div class="category-tag" onclick="selectCategory('Infrastructure', this)">Infrastructure</div>
+              <div class="category-tag" onclick="selectCategory('Facilities', this)">Facilities</div>
+              <div class="category-tag" onclick="selectCategory('Events', this)">Events</div>
+              <div class="category-tag" onclick="selectCategory('Library', this)">Library</div>
+              <div class="category-tag" onclick="selectCategory('Canteen', this)">Canteen</div>
+              <div class="category-tag" onclick="selectCategory('Others', this)">Others</div>
+            </div>
+            <input type="hidden" id="selectedCategory" required>
+          </div>
+
+          <div class="form-group">
+            <label for="subject">Subject *</label>
+            <input type="text" id="subject" placeholder="Brief subject line..." required>
+          </div>
+
+          <div class="form-group">
+            <label for="suggestion">Your Suggestion/Feedback *</label>
+            <textarea id="suggestion" placeholder="Share your thoughts, ideas, or concerns in detail..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="yourName">Your Name</label>
+            <input type="text" id="yourName" placeholder="Enter your name (optional for anonymous)">
+          </div>
+
+          <div class="form-group">
+            <label for="rollNumber">Roll Number</label>
+            <input type="text" id="rollNumber" placeholder="Your roll number (optional)">
+          </div>
+
+          <div class="anonymous-toggle">
+            <div class="toggle-switch" id="anonymousToggle" onclick="toggleAnonymous()">
+              <div class="toggle-slider"></div>
+            </div>
+            <label>Submit Anonymously</label>
+          </div>
+
+          <button type="submit" class="submit-btn">📤 Submit Suggestion</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- View Tab -->
+    <div id="viewTab" class="tab-content">
+      <div class="suggestions-list" id="suggestionsList">
+        <!-- Suggestions will be added here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let suggestions = [];
+    let selectedRecipientEmail = '';
+    let selectedRecipientName = '';
+    let selectedCategoryValue = '';
+    let isAnonymous = false;
+
+    // Select recipient
+    function selectRecipient(id, element) {
+      document.querySelectorAll('.recipient-card').forEach(card => card.classList.remove('selected'));
+      element.classList.add('selected');
+      
+      const emailMap = {
+        'principal': { email: 'principal@gokulan.edu', name: 'Principal' },
+        'hod-csbs': { email: 'hod.csbs@gokulan.edu', name: 'HOD - CSBS' },
+        'hod-cse': { email: 'hod.cse@gokulan.edu', name: 'HOD - CSE' },
+        'admin': { email: 'admin@gokulan.edu', name: 'Administration' },
+        'placement': { email: 'placement@gokulan.edu', name: 'Placement Cell' },
+        'library': { email: 'library@gokulan.edu', name: 'Library' }
+      };
+      
+      selectedRecipientEmail = emailMap[id].email;
+      selectedRecipientName = emailMap[id].name;
+      document.getElementById('selectedRecipient').value = id;
+    }
+
+    // Select category
+    function selectCategory(category, element) {
+      document.querySelectorAll('.category-tag').forEach(tag => tag.classList.remove('selected'));
+      element.classList.add('selected');
+      selectedCategoryValue = category;
+      document.getElementById('selectedCategory').value = category;
+    }
+
+    // Toggle anonymous
+    function toggleAnonymous() {
+      const toggle = document.getElementById('anonymousToggle');
+      toggle.classList.toggle('active');
+      isAnonymous = toggle.classList.contains('active');
+      
+      const nameField = document.getElementById('yourName');
+      const rollField = document.getElementById('rollNumber');
+      
+      if (isAnonymous) {
+        nameField.disabled = true;
+        rollField.disabled = true;
+        nameField.value = '';
+        rollField.value = '';
+        nameField.placeholder = 'Submitting anonymously';
+        rollField.placeholder = 'Submitting anonymously';
+      } else {
+        nameField.disabled = false;
+        rollField.disabled = false;
+        nameField.placeholder = 'Enter your name (optional for anonymous)';
+        rollField.placeholder = 'Your roll number (optional)';
+      }
+    }
+
+    // Handle form submission
+    document.getElementById('suggestionForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      if (!selectedRecipientEmail) {
+        alert('Please select a recipient');
+        return;
+      }
+      
+      if (!selectedCategoryValue) {
+        alert('Please select a category');
+        return;
+      }
+
+      const newSuggestion = {
+        id: Date.now(),
+        recipient: selectedRecipientName,
+        recipientEmail: selectedRecipientEmail,
+        category: selectedCategoryValue,
+        subject: document.getElementById('subject').value,
+        content: document.getElementById('suggestion').value,
+        name: isAnonymous ? 'Anonymous' : (document.getElementById('yourName').value || 'Anonymous'),
+        rollNumber: isAnonymous ? 'N/A' : (document.getElementById('rollNumber').value || 'N/A'),
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString(),
+        isAnonymous: isAnonymous
+      };
+
+      suggestions.push(newSuggestion);
+      
+      // Reset form
+      this.reset();
+      document.querySelectorAll('.recipient-card').forEach(card => card.classList.remove('selected'));
+      document.querySelectorAll('.category-tag').forEach(tag => tag.classList.remove('selected'));
+      selectedRecipientEmail = '';
+      selectedRecipientName = '';
+      selectedCategoryValue = '';
+      document.getElementById('anonymousToggle').classList.remove('active');
+      isAnonymous = false;
+      
+      alert(`✅ Suggestion sent successfully to ${newSuggestion.recipientEmail}!`);
+      
+      // Switch to view tab
+      switchTab('view');
+    });
+
+    // Render suggestions
+    function renderSuggestions() {
+      const list = document.getElementById('suggestionsList');
+      
+      if (suggestions.length === 0) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <div class="icon">💭</div>
+            <h3>No Suggestions Yet</h3>
+            <p>Be the first to share your ideas!</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Sort by date (newest first)
+      const sortedSuggestions = [...suggestions].reverse();
+
+      list.innerHTML = sortedSuggestions.map(suggestion => `
+        <div class="suggestion-card">
+          <div class="suggestion-header">
+            <div class="suggestion-meta">
+              <span class="meta-badge">📧 To: ${suggestion.recipient}</span>
+              <span class="meta-badge">${suggestion.category}</span>
+              ${suggestion.isAnonymous ? '<span class="meta-badge">🕶️ Anonymous</span>' : ''}
+            </div>
+          </div>
+          <h3 style="color: white; margin-bottom: 10px; font-size: 1.2rem;">${suggestion.subject}</h3>
+          <p class="suggestion-content">${suggestion.content}</p>
+          <div class="suggestion-footer">
+            <span>👤 ${suggestion.name}${suggestion.rollNumber !== 'N/A' ? ' (' + suggestion.rollNumber + ')' : ''}</span>
+            <span>📅 ${suggestion.date} at ${suggestion.time}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Switch between tabs
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      if (tab === 'submit') {
+        document.querySelector('.tab-btn:first-child').classList.add('active');
+        document.getElementById('submitTab').classList.add('active');
+      } else {
+        document.querySelector('.tab-btn:last-child').classList.add('active');
+        document.getElementById('viewTab').classList.add('active');
+        renderSuggestions();
+      }
+    }
+
+    // Initial render
+    renderSuggestions();
+  </script>
+</body>
+</html>

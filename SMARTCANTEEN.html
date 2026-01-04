@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Canteen - Order Now</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #a78bfa 0%, #c084fc 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .header .icon {
+      font-size: 60px;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+    }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .menu-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .menu-category {
+            margin-bottom: 30px;
+        }
+
+        .menu-category h2 {
+            color: #8b5cf6;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #8b5cf6;
+            padding-bottom: 10px;
+        }
+
+        .menu-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .menu-item {
+            border: 2px solid #e9d5ff;
+            border-radius: 12px;
+            padding: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            border-color: #8b5cf6;
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .menu-item.selected {
+            border-color: #8b5cf6;
+            background: #f3e8ff;
+        }
+
+        .item-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .item-price {
+            color: #8b5cf6;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .qty-btn {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .qty-btn:hover {
+            background: #7c3aed;
+        }
+
+        .quantity {
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .cart-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 20px;
+        }
+
+        .cart-title {
+            color: #8b5cf6;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #8b5cf6;
+            padding-bottom: 10px;
+        }
+
+        .cart-items {
+            margin-bottom: 20px;
+            min-height: 100px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9d5ff;
+        }
+
+        .cart-total {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin: 20px 0;
+            padding-top: 15px;
+            border-top: 2px solid #8b5cf6;
+        }
+
+        .pay-btn {
+            width: 100%;
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pay-btn:hover {
+            background: #7c3aed;
+            transform: scale(1.02);
+        }
+
+        .pay-btn:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .qr-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .qr-modal.active {
+            display: flex;
+        }
+
+        .qr-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .success-icon {
+            font-size: 4em;
+            color: #10b981;
+            margin-bottom: 20px;
+        }
+
+        .qr-content h2 {
+            color: #8b5cf6;
+            margin-bottom: 20px;
+        }
+
+        #qrcode {
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .order-details {
+            text-align: left;
+            background: #f3e8ff;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .order-details p {
+            margin: 8px 0;
+            color: #333;
+        }
+
+        .close-btn {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .close-btn:hover {
+            background: #7c3aed;
+        }
+
+        .empty-cart {
+            text-align: center;
+            color: #9ca3af;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .menu-items {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-section {
+                position: static;
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="C:\Users\GOKULAN\OneDrive\Documents\IDEALAB\SMVECHUBGLASSFINISH.html" class="back-btn">← Back to Hub</a>
+
+    <div class="container">
+        <div class="header">
+            <div style="font-size: 4em;">🍟</div>
+            <h1>Smart Canteen</h1>
+            <p>Select your items and place your order</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+            <div class="menu-section">
+                <div class="menu-category">
+                    <h2>🍔 Main Course</h2>
+                    <div class="menu-items" id="mainCourse"></div>
+                </div>
+
+                <div class="menu-category">
+                    <h2>🥤 Beverages</h2>
+                    <div class="menu-items" id="beverages"></div>
+                </div>
+
+                <div class="menu-category">
+                    <h2>🍰 Snacks & Desserts</h2>
+                    <div class="menu-items" id="snacks"></div>
+                </div>
+            </div>
+
+            <div class="cart-section">
+                <h3 class="cart-title">🛒 Your Order</h3>
+                <div class="cart-items" id="cartItems">
+                    <div class="empty-cart">Your cart is empty</div>
+                </div>
+                <div class="cart-total">
+                    Total: ₹<span id="totalAmount">0</span>
+                </div>
+                <button class="pay-btn" id="payBtn" disabled>Proceed to Pay</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-modal" id="qrModal">
+        <div class="qr-content">
+            <div class="success-icon">✅</div>
+            <h2>Payment Confirmed!</h2>
+            <div class="order-details" id="orderDetails"></div>
+            <div id="qrcode"></div>
+            <p style="color: #6b7280; margin-top: 15px;">Show this QR code at the counter to collect your order</p>
+            <button class="close-btn" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        const menuData = {
+            mainCourse: [
+                { id: 1, name: 'Veg Burger', price: 60 },
+                { id: 2, name: 'Cheese Sandwich', price: 50 },
+                { id: 3, name: 'Pasta', price: 80 },
+                { id: 4, name: 'Pizza Slice', price: 70 },
+                { id: 5, name: 'Veg Roll', price: 55 },
+                { id: 6, name: 'French Fries', price: 45 }
+            ],
+            beverages: [
+                { id: 7, name: 'Coffee', price: 30 },
+                { id: 8, name: 'Tea', price: 20 },
+                { id: 9, name: 'Cold Drink', price: 35 },
+                { id: 10, name: 'Juice', price: 40 },
+                { id: 11, name: 'Milkshake', price: 60 }
+            ],
+            snacks: [
+                { id: 12, name: 'Samosa', price: 25 },
+                { id: 13, name: 'Cake Slice', price: 50 },
+                { id: 14, name: 'Cookie', price: 30 },
+                { id: 15, name: 'Ice Cream', price: 45 },
+                { id: 16, name: 'Chips', price: 20 }
+            ]
+        };
+
+        let cart = {};
+
+        function renderMenu() {
+            Object.keys(menuData).forEach(category => {
+                const container = document.getElementById(category);
+                menuData[category].forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'menu-item';
+                    itemDiv.innerHTML = `
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-price">₹${item.price}</div>
+                        <div class="quantity-control">
+                            <button class="qty-btn" onclick="updateQuantity(${item.id}, -1)">−</button>
+                            <span class="quantity" id="qty-${item.id}">0</span>
+                            <button class="qty-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
+                        </div>
+                    `;
+                    container.appendChild(itemDiv);
+                });
+            });
+        }
+
+        function updateQuantity(itemId, change) {
+            const item = findItemById(itemId);
+            if (!cart[itemId]) {
+                cart[itemId] = { ...item, quantity: 0 };
+            }
+            
+            cart[itemId].quantity += change;
+            
+            if (cart[itemId].quantity <= 0) {
+                delete cart[itemId];
+            }
+            
+            document.getElementById(`qty-${itemId}`).textContent = cart[itemId]?.quantity || 0;
+            updateCart();
+        }
+
+        function findItemById(id) {
+            for (let category in menuData) {
+                const item = menuData[category].find(i => i.id === id);
+                if (item) return item;
+            }
+            return null;
+        }
+
+        function updateCart() {
+            const cartContainer = document.getElementById('cartItems');
+            const cartKeys = Object.keys(cart);
+            
+            if (cartKeys.length === 0) {
+                cartContainer.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
+                document.getElementById('totalAmount').textContent = '0';
+                document.getElementById('payBtn').disabled = true;
+                return;
+            }
+            
+            cartContainer.innerHTML = '';
+            let total = 0;
+            
+            cartKeys.forEach(key => {
+                const item = cart[key];
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                const cartItemDiv = document.createElement('div');
+                cartItemDiv.className = 'cart-item';
+                cartItemDiv.innerHTML = `
+                    <div>
+                        <div style="font-weight: bold;">${item.name}</div>
+                        <div style="color: #6b7280; font-size: 0.9em;">${item.quantity} × ₹${item.price}</div>
+                    </div>
+                    <div style="font-weight: bold; color: #8b5cf6;">₹${itemTotal}</div>
+                `;
+                cartContainer.appendChild(cartItemDiv);
+            });
+            
+            document.getElementById('totalAmount').textContent = total;
+            document.getElementById('payBtn').disabled = false;
+        }
+
+        function generateOrderId() {
+            return 'ORD' + Date.now().toString().slice(-8);
+        }
+
+        document.getElementById('payBtn').addEventListener('click', function() {
+            const orderId = generateOrderId();
+            const total = document.getElementById('totalAmount').textContent;
+            const orderTime = new Date().toLocaleString();
+            
+            const orderItems = Object.values(cart).map(item => 
+                `${item.name} x${item.quantity}`
+            ).join(', ');
+            
+            const qrData = JSON.stringify({
+                orderId: orderId,
+                items: orderItems,
+                total: `₹${total}`,
+                status: 'PAID',
+                time: orderTime
+            });
+            
+            document.getElementById('orderDetails').innerHTML = `
+                <p><strong>Order ID:</strong> ${orderId}</p>
+                <p><strong>Items:</strong> ${orderItems}</p>
+                <p><strong>Total Amount:</strong> ₹${total}</p>
+                <p><strong>Status:</strong> <span style="color: #10b981;">PAYMENT CONFIRMED</span></p>
+                <p><strong>Time:</strong> ${orderTime}</p>
+            `;
+            
+            document.getElementById('qrcode').innerHTML = '';
+            new QRCode(document.getElementById('qrcode'), {
+                text: qrData,
+                width: 200,
+                height: 200,
+                colorDark: "#8b5cf6",
+                colorLight: "#ffffff",
+            });
+            
+            document.getElementById('qrModal').classList.add('active');
+        });
+
+        function closeModal() {
+            document.getElementById('qrModal').classList.remove('active');
+            cart = {};
+            document.querySelectorAll('.quantity').forEach(el => el.textContent = '0');
+            updateCart();
+        }
+
+        renderMenu();
+    </script>
+</body>
+</html>

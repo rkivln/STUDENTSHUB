@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Campus Hub</title>
+  <style>
+    /* Basic Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to bottom right, #242628, #2c2a2a);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 2.5rem;
+      color: #ffffff;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background-color: #fff;
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    }
+
+    .icon {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+
+    .title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .desc {
+      font-size: 0.95rem;
+      color: #555;
+      margin-bottom: 15px;
+    }
+
+    .btn {
+      background-color: #4f46e5;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #3730a3;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      color: #ffffff;
+      font-weight: bold;
+    }
+
+    /* Color variations for cards */
+    .blue { background-color: #dbeafe; }
+    .green { background-color: #d1fae5; }
+    .orange { background-color: #ffedd5; }
+    .purple { background-color: #ede9fe; }
+    .pink { background-color: #fcd5f9; }
+    .yellow { background-color: #fef3c7; }
+    .red { background-color: #fee2e2; }
+    .indigo { background-color: #e0e7ff; }
+
+  </style>
+</head>
+<body>
+  <h1>GOKULAN SMART HUB</h1>
+  <div class="grid">
+
+    <div class="card orange">
+      <div class="icon">🧍‍♂</div>
+      <div class="title">Attedance Initiator</div>
+      <div class="desc">Smart Attedance initiator and entry register</div>
+      <a href="#" class="btn">Explore</a>
+    </div>
+
+    <div class="card purple">
+      <div class="icon">📢</div>
+      <div class="title">Smart Notice Board</div>
+      <div class="desc">Digital notices, schedules, and event updates.</div>
+      <a href="#" class="btn">Explore</a>
+    </div>
+
+    <div class="card pink">
+      <div class="icon">🔍</div>
+      <div class="title">Lost & Found App</div>
+      <div class="desc">Report or find lost items easily within campus.</div>
+      <a href="#" class="btn">Explore</a>
+    </div>
+
+    
+
+    <div class="card red">
+      <div class="icon">📧</div>
+      <div class="title">Mail Box</div>
+      <div class="desc">Helps students to directly give the feedbacks.</div>
+      <a href="#" class="btn">Explore</a>
+    </div>
+
+    <div class="card indigo">
+      <div class="icon">🧠</div>
+      <div class="title">Assignment reminder</div>
+      <div class="desc">Notifies the deadline for the assignment and works</div>
+      <a href="#" class="btn">Explore</a>
+    </div>
+     <div class="card purple">
+      <div class="icon">📚</div>
+      <div class="title">Study Materials</div>
+      <div class="desc">Digital notes, Articles, and e-books.</div>
+      <a href="#" class="btn">Explore</a>
+    </div>
+  </div>
+
+  <footer>
+    Designed by GOKULAN| CSBS Dept.
+  </footer>
+</body>
+</html>
